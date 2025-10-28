@@ -218,7 +218,7 @@ create table if not exists services (
 	name varchar(255),
 	price decimal(5,2),
 	bid int not null,
-	duration int default 0, 
+	durationMin int default 0, 
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (sid),
@@ -411,6 +411,7 @@ create table if not exists audit (
 	changed_by varchar(128),														# Who made change
 	primary key (id)
 );
+
 
 
 
