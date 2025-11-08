@@ -1,0 +1,244 @@
+-- GPT SCRIPT (IF STARTING FROM SCRATCH AGAIN LIKE ME)
+USE salon_app;
+
+/*
+ * NOTE: The 'roles' table is already populated by your script:
+ * 1 = customer
+ * 2 = business
+ * 3 = employee
+ */
+
+
+## 1. users
+-- We will create 5 users:
+-- 1: Alice Smith (Customer)
+-- 2: Bob Johnson (Customer)
+-- 3: Sarah Jenkins (Business Owner)
+-- 4: Mike Brown (Employee)
+-- 5: Emily Davis (Employee)
+
+INSERT INTO users (first_name, last_name, phone)
+VALUES
+('Alice', 'Smith', '5551234567'),
+('Bob', 'Johnson', '5559876543'),
+('Sarah', 'Jenkins', '5551112222'),
+('Mike', 'Brown', '5553334444'),
+('Emily', 'Davis', '5555556666');
+
+
+## 2. authenticate
+-- Give all users an email and a mock password hash/salt
+
+INSERT INTO authenticate (uid, email, pw_hash, salt)
+VALUES
+(1, 'alice.smith@email.com', 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2', 'salty123abcdeFGSalty123abcdeFG'),
+(2, 'b.johnson@email.com', 'b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3', 'salty456hijklMNSalty456hijklMN'),
+(3, 'sarah.jenkins@luxecuts.com', 'c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4', 'salty789opqrstUSalty789opqrstU'),
+(4, 'mike.brown@luxecuts.com', 'd4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5', 'salty101vwxyzABCSalty101vwxyzAB'),
+(5, 'emily.davis@luxecuts.com', 'e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6', 'salty202defghiJSalty202defghiJ');
+
+
+## 3. users_roles
+-- Assign roles to the users
+
+INSERT INTO users_roles (uid, rid)
+VALUES
+(1, 1), -- Alice is a Customer
+(2, 1), -- Bob is a Customer
+(3, 2), -- Sarah is a Business Owner
+(4, 3), -- Mike is an Employee
+(5, 3); -- Emily is an Employee
+
+
+## 4. customers
+-- Create customer profiles for Alice and Bob
+
+INSERT INTO customers (uid)
+VALUES
+(1), -- Alice's customer profile (cid 1)
+(2); -- Bob's customer profile (cid 2)
+
+
+## 5. addresses
+-- Create an address for the business
+
+INSERT INTO addresses (street, city, state, country,zip_code)
+VALUES
+('123 Salon Way', 'Metropolis', 'NY', 'USA','12345'); -- aid 1
+
+
+## 6. business
+-- Create Sarah's business, "Luxe Cuts", at the address
+
+INSERT INTO business (uid, name, aid, status)
+VALUES
+(3, 'Luxe Cuts', 1, true); -- bid 1
+
+
+## 7. employee
+-- Assign Mike and Emily to "Luxe Cuts"
+
+INSERT INTO employee (uid, bid)
+VALUES
+(4, 1), -- eid 1 (Mike)
+(5, 1); -- eid 2 (Emily)
+
+
+## 8. payment_information
+-- Add payment methods for customers
+
+INSERT INTO payment_information (uid, payment_type, card_number)
+VALUES
+(1, 'Credit Card', '4111222233334444'), -- Alice's card
+(2, 'Debit Card', '5222333344445555');  -- Bob's card
+
+
+## 9. expertise
+-- Define some skills employees can have
+
+INSERT INTO expertise (expertise)
+VALUES
+('Men''s Haircut'),   -- exp_id 1
+('Women''s Haircut'), -- exp_id 2
+('Coloring'),        -- exp_id 3
+('Styling');         -- exp_id 4
+
+
+## 10. employee_expertise
+-- Assign expertise to Mike and Emily
+
+INSERT INTO employee_expertise (eid, exp_id)
+VALUES
+(1, 1), -- Mike is an expert in Men's Haircuts
+(1, 4), -- Mike is an expert in Styling
+(2, 2), -- Emily is an expert in Women's Haircuts
+(2, 3); -- Emily is an expert in Coloring
+
+
+## 11. schedule
+-- Give employees working shifts
+
+INSERT INTO schedule (eid, start_time, finish_time)
+VALUES
+(1, '2025-11-03 09:00:00', '2025-11-03 17:00:00'), -- Mike's shift on Monday
+(2, '2025-11-04 10:00:00', '2025-11-04 18:00:00'); -- Emily's shift on Tuesday
+
+
+## 12. services
+-- List the services offered by "Luxe Cuts"
+
+INSERT INTO services (name, price, bid)
+VALUES
+('Men''s Haircut', 40.00, 1),  -- sid 1
+('Women''s Haircut', 65.00, 1), -- sid 2
+('Balayage', 150.00, 1);     -- sid 3
+
+
+## 13. products
+-- List products sold by "Luxe Cuts"
+
+INSERT INTO products (pid, name, bid, price, stock, description)
+VALUES
+(101, 'Hydrating Shampoo', 1, 25.00, 50, 'Sulfate-free shampoo for dry hair.'),
+(102, 'Volumizing Conditioner', 1, 27.00, 40, 'Lightweight conditioner for fine hair.');
+
+
+## 14. cart
+-- Add an item to Alice's shopping cart
+
+INSERT INTO cart (pid, amount, uid)
+VALUES
+(101, 1, 1); -- Alice (uid 1) has 1 "Hydrating Shampoo" (pid 101) in her cart
+
+
+## 15. appointments
+-- Create appointments for Alice and Bob
+
+INSERT INTO appointments (cid, eid, sid, start_time, expected_end_time, notes)
+VALUES
+(1, 2, 3, '2025-11-04 10:30:00', '2025-11-04 12:30:00', 'Wants a natural-looking balayage.'), -- aid 1: Alice with Emily for Balayage
+(2, 1, 1, '2025-11-03 14:00:00', '2025-11-03 14:45:00', 'Just a trim on the sides.');      -- aid 2: Bob with Mike for Men's Haircut
+
+
+## 16. services_booked
+-- Log the services for those appointments
+
+INSERT INTO services_booked (aid, sid)
+VALUES
+(1, 3), -- Appointment 1 booked service 3
+(2, 1); -- Appointment 2 booked service 1
+
+
+## 17. services_provided
+-- Mark Bob's appointment as completed (let's assume Alice's is in the future)
+
+INSERT INTO services_provided (aid, sid)
+VALUES
+(2, 1); -- Appointment 2 (Bob's) had service 1 provided
+
+
+## 18. reviews
+-- Let's have Alice and Bob leave reviews
+
+INSERT INTO reviews (cid, bid, eid, rating, comment)
+VALUES
+(1, NULL, 2, 5, 'Emily was amazing! My balayage looks fantastic. Highly recommend!'), -- rvw_id 1: Alice reviews Emily (eid 2)
+(2, 1, NULL, 3, 'Good haircut, but the wait was a bit long even with an appointment.'); -- rvw_id 2: Bob reviews the business (bid 1)
+
+
+## 19. review_replies
+-- Sarah (the owner) replies to Bob's review
+
+INSERT INTO review_replies (rvw_id, uid, comment)
+VALUES
+(2, 3, 'Hi Bob, thank you for the feedback. We apologize for the wait and are working on our scheduling to improve this!');
+
+
+## 20. loyalty_programs
+-- Create a loyalty program for "Luxe Cuts"
+
+INSERT INTO loyalty_programs (bid, appts_thresh, threshold)
+VALUES
+(1, true, 10); -- lprog_id 1: 10 appointments to get a reward
+
+
+## 21. loyalty_transactions
+-- Log Bob's completed appointment towards the loyalty program
+
+INSERT INTO loyalty_transactions (cid, lprog_id)
+VALUES
+(2, 1); -- Bob (cid 2) gets credit for 1 appointment
+
+
+## 22. rewards
+-- Define the reward for the loyalty program
+
+INSERT INTO rewards (bid, lprog_id, is_appt, rwd_value)
+VALUES
+(1, 1, true, 1.00); -- The reward is 1 free appointment
+
+
+## 23. loyalty_points
+-- Define a point value for the business (if they use points)
+
+INSERT INTO loyalty_points (bid, pts_value)
+VALUES
+(1, 0.01); -- e.g., 1 point = $0.01
+
+
+## 24. promotions
+-- Create a recurring promotion
+
+INSERT INTO promotions (lprog_id, start_date, end_date, is_recurring, recurr_day, start_time, end_time)
+VALUES
+(1, '2025-01-01 00:00:00', '2025-12-31 00:00:00', true, 'Tuesday', '09:00:00', '17:00:00'); -- Senior Discount Tuesdays
+
+
+## 25. email_subscription
+-- Set email preferences for users
+
+INSERT INTO email_subscription (uid, cid, promotion, appointment)
+VALUES
+(1, 1, true, true),  -- Alice wants all emails
+(2, 2, false, true), -- Bob only wants appointment reminders
+(3, NULL, false, false); -- Sarah (owner) doesn't get customer emails
