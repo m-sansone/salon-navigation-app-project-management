@@ -229,6 +229,7 @@ create table if not exists services (
 	name varchar(255),
 	price decimal(5,2),
 	bid int not null,
+	durationMin int default 0,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (sid),
@@ -427,6 +428,7 @@ create table if not exists payment_information (
 
 
 -- products each business sells with their stock
+-- image: keeps track of images and stores in db as well
 create table if not exists products (
 	pid int auto_increment not null,														# primary key
 	name varchar(255),																# name of product
