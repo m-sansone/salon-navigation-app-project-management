@@ -54,8 +54,7 @@ VALUES
     (1, 'alice@email.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '1f8a7f1a3d5e4b9f8a7b6c5d4e3f2a1b'),
     (2, 'bob@email.com', 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb9', '2a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d'),
     (3, 'carol@salon.com', 'c3228549323c4675b068694857b850495f553e839e0970a48b598d4f6c7a7b8e', '3b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e'),
-    (4)
-, 'david@salon.com', 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', '4c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f'),
+    (4, 'david@salon.com', 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', '4c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f'),
     (5, 'emily@salon.com', 'e57715f4e3c3b5b1a6b0c8a6f3b0c8a6f3b0c8a6f3b0c8a6f3b0c8a6f3b0c8a6', '5d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a');
 
 /* * 3. Role-Specific Tables (Customers, Business, Employees)
