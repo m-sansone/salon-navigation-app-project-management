@@ -59,7 +59,8 @@ insert into roles (name)
 values
 	("customer"),
 	("business"),
-	("employee");
+	("employee"),
+	("admin");
 
 
 
