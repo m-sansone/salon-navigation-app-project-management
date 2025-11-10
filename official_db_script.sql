@@ -375,12 +375,12 @@ create table if not exists loyalty_transactions (
 
 -- track what type of emails each user wants to recieve
 create table if not exists email_subscription (
-	cid int not null,																				# primary key (foreign key users uid)
+    cid int not null,																				# primary key (foreign key users uid)
 	promotion bool default true,													# does customer want to recieve emails for promotions
 	appointment bool default true,													# does customer want to recieve emails for appointments
 	created_at timestamp default current_timestamp(),                               # cid can be null, not every user will be a client
 	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (uid),
+	primary key (cid),
 	foreign key (uid) references users(uid), 
 	foreign key (cid) references customers(cid) 
 );
