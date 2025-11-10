@@ -276,31 +276,6 @@ create table if not exists appointments (
 	foreign key (sid) references services(sid)
 );
 
--- the service a customer has booked an appointment for
-create table if not exists services_booked (
-	id int auto_increment  not null,												# primary key
-	aid int not null,																# appointment (foreign key appointments aid)
-	sid int not null,																# service booked (foreign key services sid)
-	created_at timestamp default current_timestamp(),
-	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (id),
-	foreign key (aid) references appointments(aid),
-	foreign key (sid) references services(sid)
-);
-
-
--- the service a customer has attended an appointment for
-create table if not exists services_provided (
-	id int auto_increment not null,													# primary key
-	aid int not null,																# appointment (foreign key appointments aid)
-	sid int not null,																# service provided (foreign key services sid)
-	created_at timestamp default current_timestamp(),								
-	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (id),
-	foreign key (aid) references appointments(aid),
-	foreign key (sid) references services(sid)
-);
-
 -- MODIFIED: each row is a loyalty program a business has implemented; each program has a unique id (lprog_id)
 -- foreign key links to business (bid)
 -- indication for what type of various loyalty programs are possible: Buy 1 Get 1 Free ("BOGO"), points accumulation, money spent on a business' services
@@ -400,8 +375,7 @@ create table if not exists loyalty_transactions (
 
 -- track what type of emails each user wants to recieve
 create table if not exists email_subscription (
-	uid int not null,	
-	cid int,																				# primary key (foreign key users uid)
+	cid int not null,																				# primary key (foreign key users uid)
 	promotion bool default true,													# does customer want to recieve emails for promotions
 	appointment bool default true,													# does customer want to recieve emails for appointments
 	created_at timestamp default current_timestamp(),                               # cid can be null, not every user will be a client
@@ -454,9 +428,23 @@ create table if not exists cart (
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (cart_id),
+	unique key (cid,pid),   -- needs to be unique for cart adding logic
 	foreign key (pid) references products(pid),
 	foreign key (cid) references customers(cid)
 );
+
+-- Tracking the Loyalty Points balance for each customer of a business
+create table if not exists customer_loyalty_points(
+	cid int not null,
+	bid int not null,
+	pts_balance decimal(5,2),
+	created_at timestamp default current_timestamp(),
+	updated_at datetime default current_timestamp() on update current_timestamp(),
+	primary key (cid),
+	foreign key (cid) references customers(cid)
+
+);
+	
 
 -- track changes made to tables
 create table if not exists audit (
