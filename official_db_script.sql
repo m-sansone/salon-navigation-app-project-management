@@ -381,7 +381,6 @@ create table if not exists email_subscription (
 	created_at timestamp default current_timestamp(),                               # cid can be null, not every user will be a client
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (cid),
-	foreign key (uid) references users(uid), 
 	foreign key (cid) references customers(cid) 
 );
 
