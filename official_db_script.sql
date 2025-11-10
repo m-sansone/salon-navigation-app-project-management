@@ -103,7 +103,7 @@ create table if not exists addresses (
 create table if not exists business (
 	bid int auto_increment not null,
 	uid int not null,
-	name varchar(255) not null,
+	name varchar(255) not null unique,
 	aid int not null,
 	status bool default false,
 	created_at timestamp default current_timestamp(),
