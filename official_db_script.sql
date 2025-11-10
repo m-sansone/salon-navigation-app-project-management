@@ -440,8 +440,9 @@ create table if not exists customer_loyalty_points(
 	pts_balance decimal(5,2),
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (cid),
-	foreign key (cid) references customers(cid)
+	primary key (cid,bid),
+	foreign key (cid) references customers(cid),
+    foreign key (bid) references business (bid)
 
 );
 	
