@@ -358,7 +358,6 @@ create table if not exists loyalty_points (
 -- when does the promo start and end that day (start_time, end_time)
 create table if not exists promotions (
 	promo_id int auto_increment not null,
-	lprog_id int not null,
 	start_date timestamp not null,
 	end_date timestamp not null, 
 	is_recurring bool default false, 
@@ -482,4 +481,5 @@ create table if not exists audit (
 	changed_by varchar(128),														# Who made change
 	primary key (id)
 );
+
 
