@@ -262,14 +262,16 @@ create table if not exists authenticate(
 
 -- stores appointments made by customers for each business and for which employee
 create table if not exists appointments (
-	aid int auto_increment not null, 
-	cid int not null, 
+	aid int auto_increment not null, 	
+	cid int not null, 		
 	eid int, 
 	sid int not null, 
 	start_time timestamp not null,
 	expected_end_time timestamp not null,
 	end_time timestamp on update current_timestamp(),	
 	notes text,
+	before_image longblob,
+	after_image longblob,
 	created_at timestamp default current_timestamp(),								
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (aid),
@@ -278,29 +280,17 @@ create table if not exists appointments (
 	foreign key (sid) references services(sid)
 );
 
--- the service a customer has booked an appointment for
-create table if not exists services_booked (
-	id int auto_increment  not null,												# primary key
-	aid int not null,																# appointment (foreign key appointments aid)
-	sid int not null,																# service booked (foreign key services sid)
-	created_at timestamp default current_timestamp(),
-	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (id),
-	foreign key (aid) references appointments(aid),
-	foreign key (sid) references services(sid)
-);
-
-
--- the service a customer has attended an appointment for
-create table if not exists services_provided (
-	id int auto_increment not null,													# primary key
-	aid int not null,																# appointment (foreign key appointments aid)
-	sid int not null,																# service provided (foreign key services sid)
-	created_at timestamp default current_timestamp(),								
-	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (id),
-	foreign key (aid) references appointments(aid),
-	foreign key (sid) references services(sid)
+CREATE TABLE IF NOT EXISTS appointment_notes (
+    note_id INT AUTO_INCREMENT PRIMARY KEY,
+    aid INT NOT NULL,
+    author_uid INT NOT NULL,
+    author_role VARCHAR(50) NOT NULL,
+    note_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aid) REFERENCES appointments(aid) ON DELETE CASCADE,
+    FOREIGN KEY (author_uid) REFERENCES users(uid) ON DELETE CASCADE,
+    INDEX idx_appointment (aid),
+    INDEX idx_created (created_at)
 );
 
 -- MODIFIED: each row is a loyalty program a business has implemented; each program has a unique id (lprog_id)
@@ -401,11 +391,11 @@ create table if not exists loyalty_transactions (
 
 
 -- track what type of emails each user wants to recieve
-create table if not exists email_subscription (	
-	cid int not null,
+create table if not exists email_subscription (
+    cid int not null,
 	promotion bool default true,
-	appointment bool default true,													
-	created_at timestamp default current_timestamp(),
+	appointment bool default true,
+	created_at timestamp default current_timestamp(), 
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (cid),
 	foreign key (cid) references customers(cid) 
@@ -415,10 +405,10 @@ create table if not exists email_subscription (
 
 -- store user payment methods
 create table if not exists payment_information (
-	id int auto_increment not null,																# primary key
-	uid int not null,																# user (foreign key users uid)
-	payment_type varchar(128),														# payment type (credit, debit, etc)
-	card_number varchar(128),														# card number
+	id int auto_increment not null,	
+	uid int not null,	
+	payment_type varchar(128),	
+	card_number varchar(128),
 	created_at timestamp default current_timestamp(),								
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (id),
@@ -454,9 +444,31 @@ create table if not exists cart (
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (cart_id),
+	unique key (cid,pid),   -- needs to be unique for cart adding logic
 	foreign key (pid) references products(pid),
 	foreign key (cid) references customers(cid)
 );
+
+-- Tracking the Loyalty Points balance for each customer of a business
+create table if not exists customer_loyalty_points(
+	cid int not null,
+	bid int not null,
+	pts_balance decimal(5,2),
+	created_at timestamp default current_timestamp(),
+	updated_at datetime default current_timestamp() on update current_timestamp(),
+	primary key (cid,bid),
+	foreign key (cid) references customers(cid),
+    foreign key (bid) references business (bid)
+
+);
+
+create table if not exists service_time (
+	id int auto_increment not null,
+	start_time timestamp default current_timestamp(),
+	updated_at datetime default current_timestamp() on update current_timestamp(),
+	primary key (id)
+);
+	
 
 -- track changes made to tables
 create table if not exists audit (
