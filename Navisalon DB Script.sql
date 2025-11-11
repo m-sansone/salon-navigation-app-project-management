@@ -210,16 +210,16 @@ create table if not exists review_replies (
  * Foreign Key: eid(employee_id [from employee])
  * */
 create table if not exists schedule (
-	sched_id int auto_increment not null,
-	eid int not null,
-	start_time timestamp,
-	finish_time timestamp,
-	created_at timestamp default current_timestamp(),
-	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (sched_id),
-	foreign key (eid) references employee(eid)
+    sched_id int auto_increment not null,
+    eid int not null,
+    day varchar(10),
+    start_time timestamp,
+    finish_time timestamp,
+    created_at timestamp default current_timestamp(),
+    updated_at datetime default current_timestamp() on update current_timestamp(),
+    primary key (sched_id),
+    foreign key (eid) references employee(eid)
 );
-
 
 /* 
  * The information stored for each service offered by a business.
@@ -482,3 +482,4 @@ create table if not exists audit (
 	changed_by varchar(128),														# Who made change
 	primary key (id)
 );
+
