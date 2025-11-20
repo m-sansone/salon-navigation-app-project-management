@@ -107,9 +107,11 @@ create table if not exists business (
 	uid int not null,
 	name varchar(255) not null unique,
 	aid int not null,
+	deposit_rate decimal(4,3) default 0.000,
 	status bool default false,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
+	check (deposit_rate<1.000),
 	constraint pk_business primary key (bid),
 	foreign key (uid) references users(uid),
 	foreign key (aid) references addresses(aid)
@@ -368,8 +370,7 @@ create table if not exists promotions (
 	description text,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
-	primary key (promo_id),
-	foreign key (lprog_id) references loyalty_programs(lprog_id)
+	primary key (promo_id)
 	
 );
 
@@ -419,13 +420,13 @@ create table if not exists payment_information (
 -- products each business sells with their stock
 -- image: keeps track of images and stores in db as well
 create table if not exists products (
-	pid int auto_increment not null,														# primary key
-	name varchar(255),																# name of product
-	bid int not null,																# business selling product (foreign key business)
-	price decimal(5,2),																# unit price of product
+	pid int auto_increment not null,
+	name varchar(255),
+	bid int not null,
+	price decimal(5,2),	
 	stock int default 0,	
-	image  LONGBLOB,															# stock of product defaults to 0
-	description text,														# description of product
+	image  LONGBLOB,				
+	description text,												
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (pid),
@@ -466,6 +467,24 @@ create table if not exists service_time (
 	start_time timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (id)
+);
+
+-- track appointment and product transactions
+CREATE TABLE IF NOT EXISTS transactions (
+    trans_id INT AUTO_INCREMENT PRIMARY KEY,
+    cid INT NOT NULL,
+    bid INT NOT NULL,
+    aid INT,
+    pid INT,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (cid) REFERENCES customers(cid),
+    FOREIGN KEY (bid) REFERENCES business(bid),
+    FOREIGN KEY (aid) REFERENCES appointments(aid),
+    FOREIGN KEY (pid) REFERENCES products(pid),
+    FOREIGN KEY (payment_method_id) REFERENCES payment_information(id)
 );
 	
 
