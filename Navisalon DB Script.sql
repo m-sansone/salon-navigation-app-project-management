@@ -117,6 +117,22 @@ create table if not exists business (
 	foreign key (aid) references addresses(aid)
 );
 
+create table if not exists hours_of_operation (
+	id int auto_increment not null,
+	bid int not null,
+	day enum ('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'),
+	open_time time not null,
+	close_time time not null,
+	is_closed bool default false,
+	created_at timestamp default current_timestamp(),
+	updated_at datetime default current_timestamp() on update current_timestamp(),
+	check ((open_time is null and close_time is null) or
+		(open_time is not null and close_time is not null)),
+	check (open_time < close_time or is_closed=true),
+	primary key (id),
+	foreign key (bid) references business(bid),
+	unique key business_day (bid, day)
+);
 
 /* 
  * Information stored of every worker for each business on record.
@@ -250,8 +266,8 @@ create table if not exists services (
  * Foreign Key: uid(user_id [from users])
  * */
 create table if not exists authenticate(
-    uid int not null,
-    email varchar(255) not null,
+    uid int unique not null,
+    email varchar(255) unique not null,
     pw_hash char(64) not null,
     salt char(32) not null, 
     created_at timestamp default current_timestamp(),
@@ -490,13 +506,14 @@ CREATE TABLE IF NOT EXISTS transactions (
 
 -- track changes made to tables
 create table if not exists audit (
-	id int auto_increment not null,													# primary key
-	table_name varchar(128) not null,												# table that was changed
-	record_id int not null,															# record of table that was changed
-	action enum('insert', 'update', 'delete') not null,								# what type of change
-	old_data json,																	# old data
-	new_data json,																	# new data
-	changed_at timestamp default current_timestamp(),								# When was change made
-	changed_by varchar(128),														# Who made change
+	id int auto_increment not null,
+	table_name varchar(128) not null,
+	record_id int not null,
+	action enum('insert', 'update', 'delete') not null,
+	old_data json,
+	new_data json,
+	changed_at timestamp default current_timestamp(),
 	primary key (id)
 );
+
+
