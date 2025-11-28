@@ -181,6 +181,27 @@ create table if not exists employee_expertise (
 	foreign key (exp_id) references expertise(exp_id)
 );
 
+create table if not exists saved_employee (
+	cid int not null,
+	eid int not null,
+	created_at timestamp default current_timestamp(),
+	updated_at datetime default current_timestamp() on update current_timestamp(),
+	primary key (cid),
+	foreign key (cid) references customers(cid),
+	foreign key (eid) references employee(eid),
+	unique key saved_employee (cid, eid)
+);
+
+create table if not exists saved_business (
+	cid int not null,
+	bid int not null,
+	created_at timestamp default current_timestamp(),
+	updated_at datetime default current_timestamp() on update current_timestamp(),
+	primary key (cid),
+	foreign key (cid) references customers(cid),
+	foreign key (bid) references business(bid),
+	unique key saved_salon (cid, bid)
+);
 
 -- MODIFIED: Keeps track of all reviews left by clients on salons/workers; primary key rvw_id (review id) for each unique review record, 
 -- with foreign keys linking back to the customer who gave the review, and the business or worker being reviewed (cid, bid, and eid, respectively).
@@ -393,9 +414,9 @@ create table if not exists promotions (
 
 -- track loyalty program transactions made by customers 
 create table if not exists loyalty_transactions (
-	lt_id int auto_increment not null,																# primary key
-	cid int not null,																# customer that made transaction (foreign key customers cid)
-	lprog_id int not null,																# loyalty program that was used for transaction (foreign key loyalty_programs lid)
+	lt_id int auto_increment not null,											
+	cid int not null,														
+	lprog_id int not null,														
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (lt_id),
@@ -452,10 +473,10 @@ create table if not exists products (
 -- stores individual cart item with amount of each product being purchased
 -- cid instead of uid because only customers use carts
 create table if not exists cart (
-	cart_id int auto_increment not null,  												# primary key
-	pid int not null, 																# product customer is buying (product is unique to business) (foreign key products pid)
-	amount int default 1,															# how much of a product customer wants
-	cid int not null, 																# who is buying product (foreign key users uid)
+	cart_id int auto_increment not null,  											
+	pid int not null, 										
+	amount int default 1,													
+	cid int not null, 															
 	bid int not null,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
