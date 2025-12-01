@@ -185,16 +185,16 @@ values
 
 INSERT INTO salon_app.users_roles (uid, rid)
 values
-(21, 2),
-(22, 2), 
-(23, 2), 
-(24, 2), 
-(25, 2),
-(26, 2),
-(27, 2),
-(28, 2),
-(29, 2),
-(30,2);
+(21, 3),
+(22, 3), 
+(23, 3), 
+(24, 3), 
+(25, 3),
+(26, 3),
+(27, 3),
+(28, 3),
+(29, 3),
+(30,3);
 
 insert into salon_app.employee (eid,uid, bid, approved)
 values
@@ -209,6 +209,10 @@ values
 (9,29,9,True),
 (10,30,10,True);
 
+update salon_app.employee e
+join salon_app.users u on e.uid=u.uid
+set e.bio=concat("Hello my name is ", u.first_name, " ",u.last_name);
+
 insert into salon_app.employee_expertise (eid, exp_id )
 values
 (1,1),
@@ -221,6 +225,39 @@ values
 (8,2),
 (9,3),
 (10,4);
+
+insert into salon_app.reviews (cid, eid, rating, comment)
+values
+(1,1,4,'Great'),
+(2,1,5,'Amazing'),
+(2,1,4,'Great'),
+(1,2,1,'Terrible'),
+(2,2,3,'Alright'),
+(2,2,1,'Terrible'),
+(1,3,3,'Alright'),
+(2,3,3,'Alright'),
+(2,3,2,'Bad'),
+(1,4,4,'Great'),
+(2,4,1,'Terrible'),
+(2,4,2,'Bad'),
+(1,5,3,'Alright'),
+(2,5,2,'Bad'),
+(2,5,1,'Terrible'),
+(1,6,4,'Great'),
+(2,6,5,'Amazing'),
+(2,6,2,'Bad'),
+(1,7,3,'Alright'),
+(2,7,1,'Terrible'),
+(2,7,1,'Terrible'),
+(1,8,5,'Amazing'),
+(2,8,4,'Great'),
+(2,8,3,'Alright'),
+(1,9,3,'Alright'),
+(2,9,2,'Bad'),
+(2,9,1,'Terrible'),
+(1,10,5,'Amazing'),
+(2,10,2,'Bad'),
+(2,10,3,'Alright');
 
 insert into salon_app.services (sid, name, price, bid)
 values
