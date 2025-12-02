@@ -20,6 +20,7 @@ create table if not exists users (
 	first_name varchar(128) not null,
 	last_name varchar (128) not null,
 	phone varchar(11),
+    last_active timestamp null,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	constraint pk_user primary key (uid)
@@ -63,7 +64,12 @@ values
 	("admin");
 
 
-
+create table if not exists industries (
+ind_id int auto_increment primary key,
+name varchar(128) not null unique,
+created_at timestamp default current_timestamp(),
+updated_at datetime default current_timestamp() on update current_timestamp()
+);
 
 /* 
  * Customer information recorded into database. Each customer has unique identification.
@@ -73,6 +79,10 @@ values
 create table if not exists customers (
 	cid int auto_increment not null,
 	uid int not null,
+    birthdate date default null,
+    gender enum("male", "female", "nonbinary", "other") default null,
+    ind_id int default null,
+    income decimal(11,2) default null,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	constraint pk_cust primary key (cid, uid),
@@ -109,6 +119,7 @@ create table if not exists business (
 	aid int not null,
 	deposit_rate decimal(4,3) default 0.000,
 	status bool default false,
+    year_est int default null,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	check (deposit_rate<1.000),
@@ -146,6 +157,7 @@ create table if not exists employee (
 	bio text,
 	profile_picture longblob,
 	approved bool default false,
+    start_year int default null,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	constraint pk_employee primary key (eid),
@@ -178,7 +190,6 @@ create table if not exists employee_expertise (
 	exp_id int not null,
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
-	constraint pk_employee_expertise primary key (eid, exp_id),
 	foreign key (eid) references employee(eid),
 	foreign key (exp_id) references expertise(exp_id)
 );
@@ -276,6 +287,13 @@ create table if not exists schedule (
     foreign key (eid) references employee(eid)
 );
 
+create table if not exists service_categories(
+cat_id int auto_increment primary key,
+name varchar(50) not null,
+created_at timestamp default current_timestamp(),
+updated_at datetime default current_timestamp() on update current_timestamp()
+);
+
 /* 
  * The information stored for each service offered by a business.
  * Primary Key: sid (service_id) 
@@ -283,6 +301,7 @@ create table if not exists schedule (
  * */
 create table if not exists services (
 	sid int auto_increment not null,
+    cat_id int not null,
 	name varchar(255),
 	price decimal(5,2),
 	bid int not null,
@@ -311,7 +330,7 @@ create table if not exists authenticate(
     updated_at timestamp default current_timestamp() on update current_timestamp(),
     constraint pk_authenticate primary key(uid,email),
     foreign key(uid) references users(uid)
-    );
+   );
 	
 
 
@@ -327,6 +346,7 @@ create table if not exists appointments (
 	notes text,
 	before_image longblob,
 	after_image longblob,
+    status enum('upcoming', 'completed', 'rescheduled', 'cancelled', 'no_show') default 'upcoming',
 	created_at timestamp default current_timestamp(),								
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (aid),
@@ -432,7 +452,9 @@ create table if not exists promotions (
 create table if not exists loyalty_transactions (
 	lt_id int auto_increment not null,																# primary key
 	cid int not null,																# customer that made transaction (foreign key customers cid)
-	lprog_id int not null,																# loyalty program that was used for transaction (foreign key loyalty_programs lid)
+	lprog_id int not null,
+    val_earned decimal(10,2) default 0,
+    val_redeemed decimal(10,2) default 0,																# loyalty program that was used for transaction (foreign key loyalty_programs lid)
 	created_at timestamp default current_timestamp(),
 	updated_at datetime default current_timestamp() on update current_timestamp(),
 	primary key (lt_id),
@@ -551,4 +573,50 @@ create table if not exists audit (
 	new_data json,
 	changed_at timestamp default current_timestamp(),
 	primary key (id)
+);
+
+create table if not exists new_users_monthly (
+new_users_id int auto_increment primary key,
+year int not null,
+month int not null,
+new_users_count int not null,
+created_at timestamp default current_timestamp(),
+updated_at datetime default current_timestamp() on update current_timestamp(),
+unique key (year, month)
+);
+
+create table if not exists active_users_monthly(
+active_users_id int auto_increment primary key,
+year int not null,
+month int not null,
+active_count int not null,
+created_at timestamp default current_timestamp(),
+updated_at datetime default current_timestamp() on update current_timestamp(),
+unique key (year, month)
+);
+
+create table if not exists visit_history (
+history_id int auto_increment primary key,
+cid int not null,
+bid int not null,
+salon_views int default 0,
+product_views int default 0,
+last_visit timestamp default current_timestamp(),
+created_at timestamp default current_timestamp(),
+updated_at datetime default current_timestamp() on update current_timestamp(),
+foreign key (cid) references customers(cid) on delete cascade,
+foreign key (bid) references business(bid) on delete cascade,
+unique key (cid, bid)
+);
+
+create table if not exists monthly_revenue (
+rev_id int auto_increment primary key,
+bid int not null,
+year int not null,
+month int not null,
+revenue int not null,
+created_at timestamp default current_timestamp(),
+updated_at datetime default current_timestamp() on update current_timestamp(),
+unique key (bid, year, month),
+foreign key (bid) references business(bid) on delete cascade
 );
